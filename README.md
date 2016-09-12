@@ -1,4 +1,5 @@
 # kue-jm
+[![Build Status](https://travis-ci.org/ChopperLee2011/kue-jm.svg?branch=master)](https://travis-ci.org/ChopperLee2011/kue-jm)
   a manager tool for handling job sequentially in Kue.js
  
 

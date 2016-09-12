@@ -1,6 +1,6 @@
 {
   "name": "kue-jm",
-  "version": "0.0.2-alpha.1",
+  "version": "0.0.2-alpha.2",
   "description": "a manager tool for handling job sequentially in Kue.js",
   "main": "index.js",
   "directories": {
@@ -26,9 +26,17 @@
     "job manager",
     "redis"
   ],
-  "author": [
-    "Chopper Lee <lihengpro@gmail.com>",
-    "xavierchow <xiayezhou@gmail.com>"
-  ],
-  "license": "ISC"
+  "author": "Chopper Lee <lihengpro@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=4.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChopperLee2011/kue-jm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ChopperLee2011/kue-jm/issues"
+  },
+  "homepage": "https://github.com/ChopperLee2011/kue-jm#readme"
 }
