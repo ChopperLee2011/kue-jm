@@ -39,13 +39,12 @@ describe('Job Manager', () => {
     });
 
     describe('with options', () => {
-      it('should return an instance in promise', done => {
-        jm.addJob('foo', { id: uuid.v4() })
+      it('should return an instance in promise', () => {
+        return jm.addJob('foo', { id: uuid.v4() })
           .then(res => {
             expect(res.id).toBeA('number');
             expect(res.type).toEqual('foo');
             expect(res).toEqual(jm.job.instance);
-            done();
           })
       });
     });
@@ -53,19 +52,39 @@ describe('Job Manager', () => {
   });
 
   describe('#START ', () => {
-    before(done => {
-      jm.addJob('foo', { id: uuid.v4() })
-        .then(() => done());
+    const tasks = [
+      {
+        name: 'ipsum',
+        ttl: 5000,
+        retry: 4,
+        path: '../test/fixture/task1',
+        param: { foo: 'bar' }
+      }
+    ];
+    before(() => {
+      return jm.addJob('foo', { id: uuid.v4() })
+        .then(() => jm.addTasks('foo', tasks))
     });
 
-    it('should return process result', done => {
-      jm.start('foo')
+    it('should return process result', () => {
+      return jm.start('foo')
         .then(res => {
-          expect(res).toBeAn('object');
-          done();
+          expect(res).toBeA('string');
+          expect(res).toEqual('bar');
         });
     });
   });
 
+  describe('#ADDTASKS', () => {
+
+    it('should add tasks to the JM ', () => {
+      const tasks = [{ name: 'task1' }];
+      return jm.addJob('ADDTASKS1', { id: uuid.v4() })
+        .then(() => jm.addTasks('ADDTASKS1', tasks))
+        .then(() => {
+          expect(jm.task.collections.get('ADDTASKS1')).toEqual(tasks);
+        });
+    });
+  })
 
 });
