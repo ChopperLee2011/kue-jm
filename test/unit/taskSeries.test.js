@@ -20,7 +20,7 @@ describe('Task series', () => {
   });
 
   describe('#EXECUTETASKS', () => {
-    const tasks = [
+    let tasks = [
       {
         name: 'ipsum',
         ttl: 5000,
@@ -73,6 +73,53 @@ describe('Task series', () => {
             });
           });
         });
+    });
+
+    it('should execute rewind tasks when some error happened', () => {
+      tasks = [
+        {
+          name: 'failure1',
+          ttl: 5000,
+          retry: 4,
+          path: '../test/fixture/failTask',
+          param: { foo: 'bar' },
+          rewind: {
+            path: '../test/fixture/rewindTask'
+          }
+        }
+      ];
+      return series.executeTasks(jm, tasks, { rewind: true })
+        .then(res => {
+          console.log(res);
+          expect(res).toEqual('-bar');
+        })
+    });
+
+    it('should run stop execute when one of the task is failure', () => {
+      tasks = [
+        {
+          name: 'failure1',
+          ttl: 5000,
+          retry: 4,
+          path: '../test/fixture/failTask',
+          param: { foo: 'bar' },
+          rewind: {
+            path: '../test/fixture/rewindTask'
+          }
+        },
+        {
+          name: 'lorem',
+          ttl: 10000,
+          retry: 5,
+          path: '../test/fixture/task2',
+          param: { baz: 'qux' }
+        }
+      ];
+
+      return series.executeTasks(jm, tasks)
+        .catch(err => {
+          expect(err).toExist();
+        })
     });
   });
 });
