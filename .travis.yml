@@ -10,8 +10,6 @@ env:
   - CXX=g++-4.8
   - REDIS_SENTINEL_JQ='127.0.0.1:26379'
   - REDIS_SENTINEL_NAME_JQ='jobqueue01'
-  - REDIS_SENTINEL_SEED='127.0.0.1:26378'
-  - REDIS_SENTINEL_NAME_SEED='seed01'
 cache:
   directories:
     - node_modules

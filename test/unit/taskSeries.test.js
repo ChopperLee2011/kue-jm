@@ -2,21 +2,34 @@
 const expect = require('expect');
 const JM = require('../../lib/jobManager');
 const taskSeries = require('../../lib/taskSeries');
+const config = require('../config');
 
 describe('Task series', () => {
   let jm;
   let series;
-  let config = {
-    redisSentinelForJQ: '127.0.0.1:26379',
-    redisSentinelNameForJQ: 'jobqueue01',
-    redisDBForJQ: 0,
-    redisDBForSubJob: 1
-  };
 
   before(() => {
     //todo: mock this.
     jm = new JM(config);
     series = new taskSeries();
+  });
+
+  describe('#SERIALIZE', () => {
+    it('should serialize task', () => {
+      const t1 = {
+        name: 'ipsum',
+        ttl: 5000,
+        retry: 4,
+        path: '../test/fixture/task1',
+        param: { foo: 'bar' }
+      };
+    });
+  });
+
+  describe('#SERIALIZE', () => {
+    it('should deserialize object', () => {
+
+    });
   });
 
   describe('#EXECUTETASKS', () => {
@@ -42,15 +55,16 @@ describe('Task series', () => {
       });
     });
 
-    it('should execute the tasks sequentially', done => {
-      series.executeTasks(jm, tasks)
+    it('should execute the tasks sequentially', () => {
+      return series.executeTasks(jm, tasks)
         .then(res => {
+          //todo: should return
           expect(res).toEqual('barqux');
-          done();
+          setTimeOut()
         });
     });
 
-    it('should record complete status and the result', done => {
+    it('should record complete status and the result', () => {
       tasks.push({
         name: 'lorem',
         path: '../test/fixture/non-exist',
@@ -69,7 +83,6 @@ describe('Task series', () => {
               expect(t.param).toEqual('{"foo":"bar"}');
               expect(t.result).toEqual('bar');
               expect(t.status).toEqual('complete');
-              done();
             });
           });
         });
@@ -90,7 +103,6 @@ describe('Task series', () => {
       ];
       return series.executeTasks(jm, tasks, { rewind: true })
         .then(res => {
-          console.log(res);
           expect(res).toEqual('-bar');
         })
     });
