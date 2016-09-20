@@ -10,7 +10,7 @@ const Series = require('../../lib/taskSeries');
 const config = require('../config');
 const mockConsumer = require('../fixture/consumer');
 
-describe.only('Job Manager', () => {
+describe('Job Manager', () => {
   let jm;
 
   beforeEach(() => {
@@ -152,7 +152,7 @@ describe.only('Job Manager', () => {
       });
 
       it('should return process result with one task', () => {
-        sinon.stub(Series.prototype, 'executeTasks').returns(Promise.resolve('pong'));
+        sinon.stub(Series.prototype, 'execute').returns(Promise.resolve('pong'));
         tasks.length = 1;
         //todo: do not know why i must create new job type here, then pass the test case.
         const jobType = 'RUN2';
@@ -171,7 +171,10 @@ describe.only('Job Manager', () => {
           .then(() => {
             return jm.job._db.get(`${jobType}:id:${sid}`)
           })
-          .then(value => expect(value).toEqual('pong'))
+          .then(value => {
+            expect(value).toEqual('pong');
+            Series.prototype.execute.restore();
+          })
           .catch(err => expect(err).toNotExist());
       });
 
