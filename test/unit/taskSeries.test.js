@@ -1,26 +1,23 @@
 'use strict';
 const expect = require('expect');
+const sinon = require('sinon');
+const uuid = require('node-uuid');
 const JM = require('../../lib/jobManager');
-const taskSeries = require('../../lib/taskSeries');
+const Series = require('../../lib/taskSeries');
+const config = require('../config');
 
 describe('Task series', () => {
   let jm;
   let series;
-  let config = {
-    redisSentinelForJQ: '127.0.0.1:26379',
-    redisSentinelNameForJQ: 'jobqueue01',
-    redisDBForJQ: 0,
-    redisDBForSubJob: 1
-  };
 
   before(() => {
     //todo: mock this.
     jm = new JM(config);
-    series = new taskSeries();
+    series = new Series();
   });
 
   describe('#EXECUTETASKS', () => {
-    const tasks = [
+    let tasks = [
       {
         name: 'ipsum',
         ttl: 5000,
@@ -35,28 +32,44 @@ describe('Task series', () => {
         path: '../test/fixture/task2',
         param: { baz: 'qux' }
       }];
+    let sandbox;
+    let sid;
+    let i = 0;
 
-    beforeEach(done => {
-      jm.job._db.flushdb(()=> {
-        done();
-      });
-    });
-
-    it('should execute the tasks sequentially', done => {
-      series.executeTasks(jm, tasks)
-        .then(res => {
-          expect(res).toEqual('barqux');
-          done();
+    beforeEach(() => {
+      sandbox = sinon.sandbox.create();
+      sandbox.stub(Series.prototype, 'execute').returns(Promise.resolve(true));
+      const jobType = `EXECUTETASKS ${i}`;
+      sid = uuid.v4();
+      return jm.addJob(jobType, { id: sid })
+        .then(() => {
+          jm.addTasks(jobType, tasks);
+          return jm.run(jobType);
+        })
+        .then(() => {
+          i++;
+          return sandbox.restore();
         });
     });
 
-    it('should record complete status and the result', done => {
+    afterEach(() => {
+      return jm.job._db.flushdb();
+    });
+
+    it('should execute the tasks sequentially', () => {
+      return series.execute(jm, sid, tasks)
+        .then(res => {
+          expect(res).toEqual('barqux');
+        });
+    });
+
+    it('should record complete status and the result', () => {
       tasks.push({
         name: 'lorem',
         path: '../test/fixture/non-exist',
         param: { baz: 'qux' }
       });
-      series.executeTasks(jm, tasks)
+      return series.execute(jm, sid, tasks)
         .catch(err => {
           expect(err).toExist();
           jm.job._db.keys('*:?', (err, replies) => {
@@ -69,10 +82,55 @@ describe('Task series', () => {
               expect(t.param).toEqual('{"foo":"bar"}');
               expect(t.result).toEqual('bar');
               expect(t.status).toEqual('complete');
-              done();
             });
           });
         });
     });
+
+    it('should stop execute when one of the task is failure', () => {
+      tasks = [
+        {
+          name: 'failure1',
+          ttl: 5000,
+          retry: 4,
+          path: '../test/fixture/failTask',
+          param: { foo: 'bar' },
+          rewind: {
+            path: '../test/fixture/rewindTask'
+          }
+        },
+        {
+          name: 'lorem',
+          ttl: 10000,
+          retry: 5,
+          path: '../test/fixture/task2',
+          param: { baz: 'qux' }
+        }
+      ];
+
+      return series.execute(jm, sid, tasks)
+        .catch(err => {
+          expect(err).toExist();
+        })
+    });
+
+    // it('should execute rewind tasks when some error happened', () => {
+    //   tasks = [
+    //     {
+    //       name: 'failure1',
+    //       ttl: 5000,
+    //       retry: 4,
+    //       path: '../test/fixture/failTask',
+    //       param: { foo: 'bar' },
+    //       rewind: {
+    //         path: '../test/fixture/rewindTask'
+    //       }
+    //     }
+    //   ];
+    //   return series.executeTasks(jm, tasks, { rewind: true })
+    //     .then(res => {
+    //       expect(res).toEqual('-bar');
+    //     })
+    // });
   });
 });
