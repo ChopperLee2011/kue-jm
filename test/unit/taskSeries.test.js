@@ -73,7 +73,7 @@ describe('Task series', () => {
         .catch(err => {
           expect(err).toExist();
           jm.job._db.keys('*:?', (err, replies) => {
-            expect(replies.length).toEqual(3);
+            expect(replies.length).toEqual(2);
             let t1 = replies.find(reply => {
               return (/.*:0$/.test(reply));
             });
