@@ -31,29 +31,28 @@ describe('Job Manager', () => {
   // });
 
   describe('#ADDJOB ', () => {
-
     context('with right options', () => {
       it('should return a correct job object with giving id', () => {
         const uid = uuid.v4();
         let jobId;
         return jm.addJob('foo', { id: uid })
-          .then(res => {
+          .then((res) => {
             expect(res).toBeAn('object');
             expect(res.id).toBeA('number');
             expect(res.data.id).toEqual(uid);
             expect(res.type).toEqual('foo');
             jobId = res.id;
-            return jm.job._db.get(`foo:id:${uid}`)
+            return jm.job._db.get(`foo:id:${uid}`);
           })
-          .then(value => {
+          .then((value) => {
             expect(value).toEqual(jobId);
             mockConsumer(jm.task._queue, 'foo');
             return delay(100);
           })
-          .then(()=>jm.job._db.get(`foo:id:${uid}`))
-          .then(value => {
+          .then(() => jm.job._db.get(`foo:id:${uid}`))
+          .then((value) => {
             expect(value).toEqual('pong');
-          })
+          });
       });
     });
 
@@ -69,9 +68,7 @@ describe('Job Manager', () => {
       it('throw an error when data do not have unique id field', () => {
         expect(() => jm.addJob('foo', { message: 'test message' })).toThrow(Error);
       });
-
     });
-
   });
 
   describe('#ADDTASKS', () => {
@@ -98,9 +95,8 @@ describe('Job Manager', () => {
         const tasks = [{ name: 'task1' }];
         expect(() => jm.addTasks('notExist', tasks)).toThrow(Error);
       });
-
-    })
-  })
+    });
+  });
 
   describe.skip('#LISTTASKS', () => {
   });
@@ -119,33 +115,32 @@ describe('Job Manager', () => {
           ttl: 5000,
           retry: 4,
           path: '../test/fixture/task1',
-          param: { foo: 'bar' }
+          param: { foo: 'bar' },
         },
         {
           name: 'lorem',
           ttl: 10000,
           retry: 5,
           path: '../test/fixture/task2',
-          param: { baz: 'qux' }
-        }
+          param: { baz: 'qux' },
+        },
       ];
       return jm.addJob(jobType, { id: uuid.v4() });
     });
 
     it('throw error when job type not exists', () => {
       return jm.run('notExist')
-        .catch(err => {
+        .catch((err) => {
           expect(err).toExist();
-        })
+        });
     });
 
     context('process with different task number', () => {
-
       it('should return null with zero task', () => {
         tasks.length = 0;
         jm.addTasks(jobType, tasks);
         return jm.run(jobType)
-          .then(res => {
+          .then((res) => {
             expect(res).toEqual(null);
           })
           .catch(err => expect(err).toNotExist());
@@ -154,7 +149,7 @@ describe('Job Manager', () => {
       it('should return process result with one task', () => {
         sinon.stub(Series.prototype, 'execute').returns(Promise.resolve('pong'));
         tasks.length = 1;
-        //todo: do not know why i must create new job type here, then pass the test case.
+        // todo: do not know why i must create new job type here, then pass the test case.
         const jobType = 'RUN2';
         let sid;
         return jm.addJob(jobType, { id: uuid.v4() })
@@ -162,23 +157,21 @@ describe('Job Manager', () => {
             jm.addTasks(jobType, tasks);
             return jm.run(jobType);
           })
-          .then(res => {
+          .then((res) => {
             expect(res).toBeA('string');
             expect(res.length).toEqual(36);
             sid = res;
             return delay(100);
           })
           .then(() => {
-            return jm.job._db.get(`${jobType}:id:${sid}`)
+            return jm.job._db.get(`${jobType}:id:${sid}`);
           })
-          .then(value => {
+          .then((value) => {
             expect(value).toEqual('pong');
             Series.prototype.execute.restore();
           })
           .catch(err => expect(err).toNotExist());
       });
-
     });
   });
-
 });

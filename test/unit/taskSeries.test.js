@@ -1,4 +1,5 @@
 'use strict';
+
 const expect = require('expect');
 const sinon = require('sinon');
 const uuid = require('node-uuid');
@@ -11,7 +12,7 @@ describe('Task series', () => {
   let series;
 
   before(() => {
-    //todo: mock this.
+    // todo: mock this.
     jm = new JM(config);
     series = new Series();
   });
@@ -23,14 +24,14 @@ describe('Task series', () => {
         ttl: 5000,
         retry: 4,
         path: '../test/fixture/task1',
-        param: { foo: 'bar' }
+        param: { foo: 'bar' },
       },
       {
         name: 'lorem',
         ttl: 10000,
         retry: 5,
         path: '../test/fixture/task2',
-        param: { baz: 'qux' }
+        param: { baz: 'qux' },
       }];
     let sandbox;
     let sid;
@@ -52,31 +53,25 @@ describe('Task series', () => {
         });
     });
 
-    afterEach(() => {
-      return jm.job._db.flushdb();
-    });
+    afterEach(() => jm.job._db.flushdb());
 
     it('should execute the tasks sequentially', () => {
       return series.execute(jm, sid, tasks)
-        .then(res => {
-          expect(res).toEqual('barqux');
-        });
+        .then(res => expect(res).toEqual('barqux'));
     });
 
     it('should record complete status and the result', () => {
       tasks.push({
         name: 'lorem',
         path: '../test/fixture/non-exist',
-        param: { baz: 'qux' }
+        param: { baz: 'qux' },
       });
       return series.execute(jm, sid, tasks)
-        .catch(err => {
+        .catch((err) => {
           expect(err).toExist();
           jm.job._db.keys('*:?', (err, replies) => {
             expect(replies.length).toEqual(2);
-            let t1 = replies.find(reply => {
-              return (/.*:0$/.test(reply));
-            });
+            const t1 = replies.find(reply => (/.*:0$/.test(reply)));
             jm.job._db.hgetall(t1, (err, t) => {
               expect(t.name).toEqual('ipsum');
               expect(t.param).toEqual('{"foo":"bar"}');
@@ -96,22 +91,22 @@ describe('Task series', () => {
           path: '../test/fixture/failTask',
           param: { foo: 'bar' },
           rewind: {
-            path: '../test/fixture/rewindTask'
-          }
+            path: '../test/fixture/rewindTask',
+          },
         },
         {
           name: 'lorem',
           ttl: 10000,
           retry: 5,
           path: '../test/fixture/task2',
-          param: { baz: 'qux' }
-        }
+          param: { baz: 'qux' },
+        },
       ];
 
       return series.execute(jm, sid, tasks)
-        .catch(err => {
+        .catch((err) => {
           expect(err).toExist();
-        })
+        });
     });
 
     // it('should execute rewind tasks when some error happened', () => {

@@ -1,9 +1,6 @@
-'use strict';
-
 const expect = require('expect');
 const uuid = require('node-uuid');
 const delay = require('delay');
-const sinon = require('sinon');
 const JM = require('../../lib/jobManager');
 const config = require('../config');
 
@@ -18,14 +15,14 @@ describe('Integration', () => {
         ttl: 5000,
         retry: 4,
         path: '../test/fixture/task1',
-        param: { foo: 'bar' }
+        param: { foo: 'bar' },
       },
       {
         name: 'lorem',
         ttl: 10000,
         retry: 5,
         path: '../test/fixture/task2',
-        param: { baz: 'qux' }
+        param: { baz: 'qux' },
       }];
 
     return jm.addJob(jobType, { id: uid })
@@ -33,15 +30,15 @@ describe('Integration', () => {
         jm.addTasks(jobType, tasks);
         return jm.run(jobType);
       })
-      .then(res => {
+      .then((res) => {
         expect(res).toEqual(uid);
         return delay(1000);
       })
       .then(() => {
-        return jm.job._db.get(`${jobType}:id:${uid}`)
+        return jm.job._db.get(`${jobType}:id:${uid}`);
       })
-      .then(val => {
+      .then((val) => {
         expect(val).toEqual('barqux');
-      })
+      });
   });
 });
