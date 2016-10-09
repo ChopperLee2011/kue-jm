@@ -26,6 +26,7 @@
     "class-methods-use-this": "off",
     "consistent-return": "off",
     "no-unused-expressions": "off",
-    "strict": "off"
+    "strict": "off",
+    "no-console": "off"
   }
 }
