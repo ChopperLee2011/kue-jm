@@ -71,7 +71,7 @@ describe('Job Manager', () => {
     });
   });
 
-  describe('#ADDTASKS', () => {
+  describe('#ADDTASKS ', () => {
     const jobType = 'ADDTASKS';
 
     beforeEach(() => {
@@ -98,10 +98,10 @@ describe('Job Manager', () => {
     });
   });
 
-  describe.skip('#LISTTASKS', () => {
+  describe.skip('#LISTTASKS ', () => {
   });
 
-  describe.skip('#REMOVETASK', () => {
+  describe.skip('#REMOVETASK ', () => {
 
   });
 
