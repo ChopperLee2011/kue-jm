@@ -23,11 +23,10 @@ describe('Integration', () => {
         retry: 5,
         path: '../test/fixture/task2',
         param: { baz: 'qux' },
-      }];
-
-    return jm.addJob(jobType, { id: uid })
+      },
+    ];
+    return jm.addJob(jobType, { id: uid }, tasks)
       .then(() => {
-        jm.addTasks(jobType, tasks);
         return jm.run(jobType);
       })
       .then((res) => {
