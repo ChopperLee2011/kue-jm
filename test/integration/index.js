@@ -2,7 +2,7 @@ const expect = require('expect');
 const uuid = require('node-uuid');
 const delay = require('delay');
 const JM = require('../../lib/jobManager');
-const config = require('../config');
+const config = require('../configWithSentinel');
 
 describe('Integration', () => {
   it('execute tasks sequentially for on job type', () => {
@@ -23,11 +23,10 @@ describe('Integration', () => {
         retry: 5,
         path: '../test/fixture/task2',
         param: { baz: 'qux' },
-      }];
-
-    return jm.addJob(jobType, { id: uid })
+      },
+    ];
+    return jm.addJob(jobType, { id: uid }, tasks)
       .then(() => {
-        jm.addTasks(jobType, tasks);
         return jm.run(jobType);
       })
       .then((res) => {
