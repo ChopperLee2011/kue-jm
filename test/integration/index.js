@@ -2,7 +2,7 @@ const expect = require('expect');
 const uuid = require('node-uuid');
 const delay = require('delay');
 const JM = require('../../lib/jobManager');
-const config = require('../config');
+const config = require('../configWithSentinel');
 
 describe('Integration', () => {
   it('execute tasks sequentially for on job type', () => {

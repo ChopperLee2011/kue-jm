@@ -7,7 +7,7 @@ const sinon = require('sinon');
 // const testQ = require('kue').createQueue();
 const JM = require('../../lib/jobManager');
 const Series = require('../../lib/taskSeries');
-const config = require('../config');
+const config = require('../configWithSentinel');
 const mockConsumer = require('../fixture/consumer');
 
 describe('Job Manager', () => {

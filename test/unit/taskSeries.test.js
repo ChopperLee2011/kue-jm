@@ -5,7 +5,7 @@ const sinon = require('sinon');
 const uuid = require('node-uuid');
 const JM = require('../../lib/jobManager');
 const Series = require('../../lib/taskSeries');
-const config = require('../config');
+const config = require('../configWithSentinel');
 
 describe('Task series', () => {
   let jm;
@@ -17,7 +17,7 @@ describe('Task series', () => {
     series = new Series();
   });
 
-  describe('#EXECUTETASKS', () => {
+  describe.skip('#EXECUTETASKS', () => {
     let tasks = [
       {
         name: 'ipsum',
