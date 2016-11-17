@@ -30,7 +30,7 @@ describe('Integration', () => {
         return jm.run(jobType);
       })
       .then((res) => {
-        expect(res).toEqual(uid);
+        expect(res).toEqual(`${jobType}:${uid}`);
         return delay(1000);
       })
       .then(() => {
