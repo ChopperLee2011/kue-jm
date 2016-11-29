@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('expect');
-const uuid = require('node-uuid');
+const uuid = require('uuid');
 const delay = require('delay');
 const sinon = require('sinon');
 // const testQ = require('kue').createQueue();

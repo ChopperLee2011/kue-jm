@@ -2,7 +2,7 @@
 
 const expect = require('expect');
 const sinon = require('sinon');
-const uuid = require('node-uuid');
+const uuid = require('uuid');
 const JM = require('../../lib/jobManager');
 const Series = require('../../lib/taskSeries');
 const config = require('../configWithSentinel');
