@@ -1,4 +1,4 @@
-# kue-jm 【Deprecated】
+# kue-jm 【Deprecated】  Move to https://github.com/Wiredcraft/kue-jm
 [![Build Status](https://travis-ci.org/ChopperLee2011/kue-jm.svg?branch=master)](https://travis-ci.org/ChopperLee2011/kue-jm)
 
   a J(ob) M(anager) tool for handling tasks(sub job) sequentially in Kue.js
